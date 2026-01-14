@@ -1,0 +1,1 @@
+# Mock Gemini API responses

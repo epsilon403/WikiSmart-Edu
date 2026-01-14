@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: wikismart_db
+    environment:
+      POSTGRES_USER: wikismart_user
+      POSTGRES_PASSWORD: wikismart_pass
+      POSTGRES_DB: wikismart_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wikismart_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wikismart_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wikismart_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://wikismart_user:wikismart_pass@db:5432/wikismart_db
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wikismart_network
+    env_file:
+      - ./backend/.env
+
+  # React Frontend
+  react-frontend:
+    build:
+      context: ./frontend/react-app
+      dockerfile: Dockerfile
+    container_name: wikismart_react
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/react-app:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - wikismart_network
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+
+  # Streamlit Frontend (Alternative)
+  streamlit-frontend:
+    build:
+      context: ./frontend/streamlit-app
+      dockerfile: Dockerfile
+    container_name: wikismart_streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend/streamlit-app:/app
+    depends_on:
+      - backend
+    networks:
+      - wikismart_network
+    environment:
+      API_URL: http://backend:8000
+
+volumes:
+  postgres_data:
+
+networks:
+  wikismart_network:
+    driver: bridge
