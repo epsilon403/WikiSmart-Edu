@@ -218,3 +218,4 @@ class TestSystemPrompts:
         system_prompt = "Do not add any conversational filler"
         assert "filler" in system_prompt.lower()
 # Commit 5: test: add mock LLM client fixtures
+# Commit 20: test: add error handling tests for extraction
