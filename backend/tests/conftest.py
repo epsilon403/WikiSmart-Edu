@@ -156,3 +156,4 @@ def expired_jwt_payload():
         "exp": datetime.now(timezone.utc) - timedelta(minutes=30)
     }
 # Commit 1: test: initialize pytest configuration and fixtures
+# Commit 16: test: add Wikipedia content extraction tests
