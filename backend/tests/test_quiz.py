@@ -233,3 +233,4 @@ class TestQuizHistory:
         count = mock_db_session.query(QuizAttempt).filter().count()
         assert count == 5
 # Commit 4: test: add sample article and quiz fixtures
+# Commit 19: test: add content structure tests
