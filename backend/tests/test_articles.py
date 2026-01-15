@@ -230,3 +230,4 @@ class TestArticleModel:
         assert hasattr(sample_article, 'action')
         assert hasattr(sample_article, 'created_at')
 # Commit 3: test: add sample user and admin fixtures
+# Commit 18: test: add language detection tests
