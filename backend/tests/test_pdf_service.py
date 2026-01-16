@@ -197,3 +197,4 @@ class TestPDFMetadata:
         page_count = len(pages)
         assert page_count == 3
 # Commit 6: test: add password hashing tests
+# Commit 21: test: add text cleaning tests
