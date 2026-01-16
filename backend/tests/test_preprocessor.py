@@ -225,3 +225,4 @@ class TestEdgeCases:
         chunks = split_into_chunks(text, chunk_size=1000)
         assert len(chunks) >= 10
 # Commit 8: test: add access token creation tests
+# Commit 23: test: add text chunking tests
