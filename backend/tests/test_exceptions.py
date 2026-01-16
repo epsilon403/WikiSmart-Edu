@@ -128,3 +128,4 @@ class TestExceptionDetails:
         exc = AppException("Test")
         assert isinstance(exc.status_code, int)
 # Commit 9: test: add refresh token creation tests
+# Commit 24: test: add preprocessor edge case tests
