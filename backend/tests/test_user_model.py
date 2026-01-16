@@ -139,3 +139,4 @@ class TestUserEquality:
         user2 = User(id=2, username="user1", email="user1@test.com", hashed_password="hash")
         assert user1.id != user2.id
 # Commit 7: test: add password verification tests
+# Commit 22: test: add text segmentation tests
