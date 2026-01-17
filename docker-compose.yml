@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   db:
@@ -10,13 +8,13 @@ services:
       POSTGRES_PASSWORD: wikismart_pass
       POSTGRES_DB: wikismart_db
     ports:
-      - "5432:5432"
+      - "5431:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - wikismart_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U wikismart_user"]
+      test: ["CMD-SHELL", "pg_isready -U wikismart_user -d wikismart_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,9 +26,9 @@ services:
       dockerfile: Dockerfile
     container_name: wikismart_backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
-      DATABASE_URL: postgresql://wikismart_user:wikismart_pass@db:5432/wikismart_db
+      DATABASE_URL: postgresql+psycopg2://wikismart_user:wikismart_pass@db:5432/wikismart_db
     volumes:
       - ./backend:/app
     depends_on:
@@ -57,7 +55,7 @@ services:
     networks:
       - wikismart_network
     environment:
-      REACT_APP_API_URL: http://localhost:8000
+      REACT_APP_API_URL: http://localhost:8001
 
   # Streamlit Frontend (Alternative)
   streamlit-frontend:
