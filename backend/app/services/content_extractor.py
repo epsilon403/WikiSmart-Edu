@@ -56,4 +56,4 @@ def get_wikipedia_content(url: str, language: str = None):
         # Retourner les options pour permettre à l'utilisateur de choisir
         raise Exception(f"Titre ambigu. Veuillez préciser parmi ces options : {', '.join(e.options[:5])}")
     except Exception as e:
-        raise Exception(f"Erreur lors de l'extraction Wikipedia: {str(e)}")
+        raise Exception(f"Erreur lors de l'extraction Wikipedia: {str(e)}")# Temp change
