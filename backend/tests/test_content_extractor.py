@@ -186,3 +186,4 @@ class TestErrorHandling:
         error_msg = f"Erreur lors de l'extraction Wikipedia: {error}"
         assert "Erreur" in error_msg
 # Commit 11: test: add user registration tests
+# Commit 26: test: add LLM translation tests
