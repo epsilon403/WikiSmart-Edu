@@ -32,3 +32,5 @@ pypdf==3.17.4
 # Testing (optional)
 pytest==7.4.3
 pytest-asyncio==0.21.1
+
+bcrypt==3.2.2

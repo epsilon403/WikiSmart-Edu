@@ -83,7 +83,7 @@ const Register = () => {
         email: formData.email,
         password: formData.password
       });
-      navigate('/');
+      navigate('/extract');
     } catch (err) {
       setErrors({
         submit: err.response?.data?.detail || 'Registration failed. Please try again.'

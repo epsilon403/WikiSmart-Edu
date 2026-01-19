@@ -22,12 +22,19 @@ class AuthService:
 
     @staticmethod
     def hash_password(password: str) -> str:
-        """Hash a password"""
+        """Hash a password (truncate to 72 bytes for bcrypt compatibility)"""
+        # Bcrypt has a 72 byte limit - truncate if necessary
+        if len(password.encode('utf-8')) > 72:
+            # Decode back to string after truncating bytes
+            password = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
         return pwd_context.hash(password)
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash"""
+        # Truncate to 72 bytes for bcrypt compatibility
+        if len(plain_password.encode('utf-8')) > 72:
+            plain_password = plain_password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
         return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod

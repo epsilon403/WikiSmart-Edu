@@ -29,7 +29,7 @@ const Login = () => {
 
     try {
       await login(formData.username, formData.password);
-      navigate('/');
+      navigate('/extract');
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid username or password');
     } finally {

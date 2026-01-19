@@ -1,1 +1,52 @@
 /* Main application styles */
+
+/* AI Summary Styles */
+.ai-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.ai-summary h3 {
+  margin-top: 0;
+  color: white;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+}
+
+.ai-summary .summary-box {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.ai-summary pre {
+  margin: 0;
+  color: white;
+  line-height: 1.6;
+}
+
+.ai-summary p {
+  margin: 0;
+  color: white;
+  line-height: 1.8;
+}
+
+.summary-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.metadata {
+  margin-top: 10px;
+  padding: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
