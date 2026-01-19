@@ -38,3 +38,4 @@ class Settings(BaseSettings):
         extra = "allow"  # Allow extra fields from .env
 
 settings = Settings()
+# Temp change for commit
