@@ -116,3 +116,4 @@ class TestConfigDefaults:
         assert settings.ACCESS_TOKEN_EXPIRE_MINUTES > 0
         assert settings.ACCESS_TOKEN_EXPIRE_MINUTES <= 60
 # Commit 10: test: add token verification tests
+# Commit 25: test: add LLM summarization tests
