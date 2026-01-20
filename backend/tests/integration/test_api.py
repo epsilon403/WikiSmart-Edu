@@ -220,3 +220,4 @@ class TestPagination:
         assert default_page == 1
         assert default_size == 10
 # Commit 15: test: add auth service integration tests
+# Commit 30: test: add PDF extraction tests
