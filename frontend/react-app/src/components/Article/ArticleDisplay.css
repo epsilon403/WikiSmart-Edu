@@ -58,15 +58,42 @@
   border-radius: 8px;
 }
 
+.summary-section.ai-summary {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+  border: 2px solid #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
 .summary-section h3 {
   color: #667eea;
   margin-top: 0;
   margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.summary-section.ai-summary h3 {
+  color: #5a67d8;
+  font-size: 18px;
 }
 
 .summary-section p {
   line-height: 1.6;
   color: #2d3748;
+}
+
+.summary-section.ai-summary .summary-box {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid #667eea;
+}
+
+.summary-section.ai-summary .summary-box pre,
+.summary-section.ai-summary .summary-box p {
+  color: #1a202c;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .full-content h3 {
