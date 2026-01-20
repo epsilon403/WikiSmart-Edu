@@ -8,8 +8,8 @@ class LLMService:
         self.client = Groq(
             api_key=os.getenv("GROQ_API_KEY"),
         )
-        # Using Llama3 or Mixtral via Groq for speed
-        self.model = "llama3-8b-8192" 
+        # Using Llama 3.1 or Mixtral via Groq for speed
+        self.model = "llama-3.1-8b-instant"  # Updated to current supported model 
 
     def generate_summary(self, text: str, summary_type: str) -> str:
         """
