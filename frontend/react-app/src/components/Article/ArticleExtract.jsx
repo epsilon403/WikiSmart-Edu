@@ -1,10 +1,12 @@
 // Article extraction component
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/auth';
 import './ArticleExtract.css';
 
 const ArticleExtract = () => {
+  const navigate = useNavigate();
   const [url, setUrl] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -187,6 +189,13 @@ const ArticleExtract = () => {
                   {extractedData.data.summary || extractedData.data.full_text?.substring(0, 500)}...
                 </p>
               </div>
+              
+              <button 
+                onClick={() => navigate('/article', { state: { article: extractedData } })}
+                className="view-article-btn"
+              >
+                View Full Article & AI Summaries
+              </button>
             </div>
           )}
         </div>
