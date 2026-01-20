@@ -157,3 +157,4 @@ def expired_jwt_payload():
     }
 # Commit 1: test: initialize pytest configuration and fixtures
 # Commit 16: test: add Wikipedia content extraction tests
+# Commit 31: test: add PDF cleanup tests
