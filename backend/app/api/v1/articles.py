@@ -1,9 +1,11 @@
-# Article routes: process_article, get_articles, get_article_by_id
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Dict, Optional
-import os
+from typing import Dict, Optional, List
+from pydantic import BaseModel
 import tempfile
+import os
+
+# App Imports
 from app.api.deps import get_db, get_current_user
 from app.services.pdf_service import extract_text_from_pdf
 from app.services.content_extractor import get_wikipedia_content
@@ -13,9 +15,14 @@ from app.models.user import User
 from app.models.article import Article, ActionType
 
 router = APIRouter()
-
-# Initialize LLM Service
 llm_service = LLMService()
+
+# --- Schemas ---
+class TranslationRequest(BaseModel):
+    text: str
+    target_language: str
+
+# --- Routes ---
 
 @router.post("/extract-pdf")
 async def extract_pdf(
@@ -23,69 +30,38 @@ async def extract_pdf(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ) -> Dict:
-    """
-    Extract text content from uploaded PDF file
-    
-    Args:
-        file: PDF file uploaded by user
-        current_user: Authenticated user
-        db: Database session
-    
-    Returns:
-        Extracted text content with metadata
-    """
-
     if not file.filename.lower().endswith('.pdf'):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only PDF files are allowed"
-        )
-    
-   
-    temp_file = None
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
     try:
-        # Create temporary file
+        # Save and Read Temp File
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
-            content = await file.read()
-            temp_file.write(content)
-            temp_file_path = temp_file.name
+            temp_file.write(await file.read())
+            temp_path = temp_file.name
+
+        # Process
+        extraction_result = await extract_text_from_pdf(temp_path, clean_up=True)
         
-        # Extract text from PDF
-        extraction_result = await extract_text_from_pdf(temp_file_path, clean_up=True)
-        
-        # Save article to database
+        # Save to DB
         new_article = Article(
             user_id=current_user.id,
             url=f"pdf://{file.filename}",
             title=file.filename,
-            action=ActionType.SUMMARY  # Default action for PDF extraction
+            action=ActionType.SUMMARY
         )
         db.add(new_article)
         db.commit()
         db.refresh(new_article)
-        
+
         return {
             "status": "success",
-            "message": "PDF extracted successfully",
             "article_id": new_article.id,
             "data": extraction_result
         }
-    
-    except FileNotFoundError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error processing PDF: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"PDF Processing failed: {str(e)}")
+
 
 @router.post("/extract-wiki")
 async def extract_wikipedia(
@@ -93,75 +69,76 @@ async def extract_wikipedia(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ) -> Dict:
-    """
-    Extract content from Wikipedia URL and generate AI summary
-    
-    Args:
-        request: Wikipedia URL
-        current_user: Authenticated user
-        db: Database session
-    
-    Returns:
-        Wikipedia article content with AI-generated summaries
-    """
     try:
-        # Extract content from Wikipedia
+        # 1. Extract
         wiki_content = get_wikipedia_content(str(request.url))
         
-        # Generate AI summaries using Groq
+        # 2. Generate Summaries (Fail silently if AI fails to keep app running)
         try:
-            # Generate short summary (bullet points)
-            short_summary = llm_service.generate_summary(
-                wiki_content["content"][:8000],  # Limit content length
-                summary_type="short"
-            )
-            
-            # Generate medium summary (paragraphs)
-            medium_summary = llm_service.generate_summary(
-                wiki_content["content"][:8000],
-                summary_type="medium"
-            )
-            
-            wiki_content["ai_summary_short"] = short_summary
-            wiki_content["ai_summary_medium"] = medium_summary
+            content_snippet = wiki_content["content"][:8000]
+            wiki_content["ai_summary_short"] = llm_service.generate_summary(content_snippet, "short")
+            wiki_content["ai_summary_medium"] = llm_service.generate_summary(content_snippet, "medium")
         except Exception as e:
-            print(f"Warning: Could not generate AI summary: {str(e)}")
-            wiki_content["ai_summary_short"] = None
-            wiki_content["ai_summary_medium"] = None
-        
-        # Save article to database
+            print(f"AI Summary warning: {e}")
+
+        # 3. Save to DB
         new_article = Article(
             user_id=current_user.id,
             url=str(request.url),
-            title=wiki_content["title"],
+            title=wiki_content.get("title", "Unknown Title"),
             action=ActionType.SUMMARY
         )
         db.add(new_article)
         db.commit()
         db.refresh(new_article)
-        
+
         return {
             "status": "success",
-            "message": "Wikipedia content extracted successfully",
             "article_id": new_article.id,
             "data": wiki_content
         }
-    
-    except ValueError as e:
 
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid Wikipedia URL: {str(e)}"
-        )
     except Exception as e:
- 
-        import traceback
-        print(f"Error extracting Wikipedia content: {str(e)}")
-        print(traceback.format_exc())
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error extracting Wikipedia content: {str(e)}"
+        raise HTTPException(status_code=400, detail=f"Wiki extraction failed: {str(e)}")
+
+
+@router.post("/translate")
+async def translate_text(
+    request: TranslationRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> Dict:
+    """
+    Translates provided text into the target language using Gemini.
+    """
+    try:
+        # 1. Call the LLM Service
+        translated_text = llm_service.get_translation(
+            text=request.text, 
+            target_language=request.target_language
         )
+
+        # 2. Save the Translation Action to DB
+        # (Assuming you might want to save translations as articles/records too)
+        new_article = Article(
+            user_id=current_user.id,
+            url="text://translation",
+            title=f"Translation to {request.target_language}",
+            action=ActionType.TRANSLATION # Ensure this exists in your Enum or use a string
+        )
+        db.add(new_article)
+        db.commit()
+        db.refresh(new_article)
+
+        return {
+            "status": "success",
+            "original_text": request.text,
+            "translated_text": translated_text,
+            "article_id": new_article.id
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
 
 
 @router.get("/")
@@ -172,51 +149,16 @@ async def get_articles(
     limit: int = 100,
     action: Optional[str] = None
 ):
-    """
-    Get all articles for current user with optional filtering
-    
-    Args:
-        current_user: Authenticated user
-        db: Database session
-        skip: Number of records to skip (pagination)
-        limit: Maximum number of records to return
-        action: Filter by action type (summary, translation, quiz)
-    
-    Returns:
-        List of articles with metadata
-    """
     query = db.query(Article).filter(Article.user_id == current_user.id)
     
-    # Filter by action type if provided
     if action:
         query = query.filter(Article.action == action)
     
-    # Order by most recent first
-    query = query.order_by(Article.created_at.desc())
-    
-    # Get total count
-    total = query.count()
-    
-    # Apply pagination
-    articles = query.offset(skip).limit(limit).all()
-    
-    # Format response
-    articles_data = [
-        {
-            "id": article.id,
-            "title": article.title,
-            "url": article.url,
-            "action": article.action.value,
-            "created_at": article.created_at.isoformat(),
-        }
-        for article in articles
-    ]
+    articles = query.order_by(Article.created_at.desc()).offset(skip).limit(limit).all()
     
     return {
-        "articles": articles_data,
-        "total": total,
-        "skip": skip,
-        "limit": limit
+        "total": query.count(),
+        "articles": articles
     }
 
 @router.get("/{article_id}")
@@ -225,18 +167,12 @@ async def get_article(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Get article by ID"""
     article = db.query(Article).filter(
-        Article.id == article_id,
+        Article.id == article_id, 
         Article.user_id == current_user.id
     ).first()
     
     if not article:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Article not found"
-        )
+        raise HTTPException(status_code=404, detail="Article not found")
     
     return {"article": article}
-# Temp
-# Temp

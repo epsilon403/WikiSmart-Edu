@@ -6,6 +6,9 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import ArticleExtraction from './components/Article/ArticleExtraction';
 import ArticleDisplay from './components/Article/ArticleDisplay';
+import WikipediaContent from './components/Article/WikipediaContent';
+import SummaryPage from './components/Article/SummaryPage';
+import TranslationPage from './components/Article/TranslationPage';
 import './App.css';
 
 // Protected Route Component
@@ -34,6 +37,32 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          {/* New organized routes */}
+          <Route 
+            path="/article/content" 
+            element={
+              <ProtectedRoute>
+                <WikipediaContent />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/article/summary" 
+            element={
+              <ProtectedRoute>
+                <SummaryPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/article/translation" 
+            element={
+              <ProtectedRoute>
+                <TranslationPage />
+              </ProtectedRoute>
+            } 
+          />
+          {/* Legacy route for backward compatibility */}
           <Route 
             path="/article-display" 
             element={
@@ -50,4 +79,4 @@ function App() {
 }
 
 export default App;
-# Temp
+

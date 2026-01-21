@@ -24,8 +24,8 @@ const ArticleExtraction = () => {
         url: wikipediaUrl
       });
       
-      // Redirect to display page with article data
-      navigate('/article-display', { state: { article: response.data } });
+      // Redirect to new content page with article data
+      navigate('/article/content', { state: { article: response.data } });
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to extract Wikipedia article');
     } finally {
@@ -53,8 +53,8 @@ const ArticleExtraction = () => {
         }
       });
 
-      // Redirect to display page with article data
-      navigate('/article-display', { state: { article: response.data } });
+      // Redirect to new content page with article data
+      navigate('/article/content', { state: { article: response.data } });
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to extract PDF content');
     } finally {
