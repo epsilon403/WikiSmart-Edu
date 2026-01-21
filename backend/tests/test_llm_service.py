@@ -219,3 +219,4 @@ class TestSystemPrompts:
         assert "filler" in system_prompt.lower()
 # Commit 5: test: add mock LLM client fixtures
 # Commit 20: test: add error handling tests for extraction
+# Commit 35: test: add quiz attempt model tests
