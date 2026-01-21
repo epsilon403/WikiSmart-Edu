@@ -129,3 +129,4 @@ class TestExceptionDetails:
         assert isinstance(exc.status_code, int)
 # Commit 9: test: add refresh token creation tests
 # Commit 24: test: add preprocessor edge case tests
+# Commit 39: test: add quiz history tests
