@@ -198,3 +198,4 @@ class TestPDFMetadata:
         assert page_count == 3
 # Commit 6: test: add password hashing tests
 # Commit 21: test: add text cleaning tests
+# Commit 36: test: add quiz scoring tests
