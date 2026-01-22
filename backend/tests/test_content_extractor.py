@@ -187,3 +187,4 @@ class TestErrorHandling:
         assert "Erreur" in error_msg
 # Commit 11: test: add user registration tests
 # Commit 26: test: add LLM translation tests
+# Commit 41: test: add user role tests
