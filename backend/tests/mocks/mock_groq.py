@@ -55,3 +55,4 @@ def mock_groq_error():
     raise Exception("Groq API Error: Rate limit exceeded")
 # Commit 13: test: add get user by id tests
 # Commit 28: test: add LLM configuration tests
+# Commit 43: test: add user relationship tests
