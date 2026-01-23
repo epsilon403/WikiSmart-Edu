@@ -199,3 +199,4 @@ class TestPDFMetadata:
 # Commit 6: test: add password hashing tests
 # Commit 21: test: add text cleaning tests
 # Commit 36: test: add quiz scoring tests
+# Commit 51: test: add API integration tests for auth endpoints
