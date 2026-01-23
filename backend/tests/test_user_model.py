@@ -141,3 +141,4 @@ class TestUserEquality:
 # Commit 7: test: add password verification tests
 # Commit 22: test: add text segmentation tests
 # Commit 37: test: add quiz generation tests
+# Commit 52: test: add API integration tests for article endpoints
