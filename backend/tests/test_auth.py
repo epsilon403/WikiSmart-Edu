@@ -255,3 +255,4 @@ class TestGetUserByUsername:
 # Commit 2: test: add mock database session fixture
 # Commit 17: test: add URL parsing tests for content extractor
 # Commit 32: test: add PDF validation tests
+# Commit 47: test: add exception tests
