@@ -232,3 +232,4 @@ class TestArticleModel:
 # Commit 3: test: add sample user and admin fixtures
 # Commit 18: test: add language detection tests
 # Commit 33: test: add PDF page break tests
+# Commit 48: test: add configuration tests
