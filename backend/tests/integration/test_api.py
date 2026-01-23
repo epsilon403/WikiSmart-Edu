@@ -221,3 +221,4 @@ class TestPagination:
         assert default_size == 10
 # Commit 15: test: add auth service integration tests
 # Commit 30: test: add PDF extraction tests
+# Commit 45: test: add article model tests
